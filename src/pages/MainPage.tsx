@@ -7,6 +7,7 @@ import './MainPage.css'
 interface MainPageProps {
   role: Role
   onRoleChange: (role: Role) => void
+  onLogout?: () => void
 }
 
 const STEPS = [
@@ -21,12 +22,12 @@ const STEPS = [
   },
 ]
 
-export function MainPage({ role, onRoleChange }: MainPageProps) {
+export function MainPage({ role, onRoleChange, onLogout }: MainPageProps) {
   const navigate = useNavigate()
 
   return (
     <div className="main-page">
-      <HeaderMain role={role} onRoleChange={onRoleChange} />
+      <HeaderMain role={role} onRoleChange={onRoleChange} onLogout={onLogout} />
 
       <section className="hero">
         <div className="hero-content">

@@ -23,8 +23,8 @@ export interface QuestionRepository {
   listAll(): Promise<Question[]>
   getById(id: string): Promise<Question | null>
   create(userId: string, input: { title: string; content: string }): Promise<Question>
-  update(id: string, input: { title: string; content: string }): Promise<Question>
-  remove(id: string): Promise<void>
+  update(id: string, userId: string, input: { title: string; content: string }): Promise<Question>
+  remove(id: string, userId: string): Promise<void>
 }
 
 export interface AnswerRepository {

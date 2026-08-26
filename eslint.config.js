@@ -5,7 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
-  { ignores: ['dist', 'node_modules', 'coverage'] },
+  { ignores: ['dist', 'node_modules', 'coverage', '.ds-sync', 'ds-bundle', '.design-sync'] },
   js.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],

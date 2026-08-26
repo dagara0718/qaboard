@@ -6,7 +6,10 @@ import type { AnswerRepository, QuestionRepository } from './types'
 let questions: Question[] = [...initialQuestions]
 let answers: Answer[] = [...initialAnswers]
 
-function assertEditable(question: Question) {
+function assertEditable(question: Question, userId: string) {
+  if (question.userId !== userId) {
+    throw new RepositoryError('UNAUTHORIZED', '본인이 작성한 질문만 수정/삭제할 수 있습니다.')
+  }
   if (question.status === 'answered') {
     throw new RepositoryError('UNAUTHORIZED', '이미 답변된 질문은 수정할 수 없습니다.')
   }
@@ -48,20 +51,20 @@ export const mockQuestionRepository: QuestionRepository = {
     questions = [question, ...questions]
     return question
   },
-  async update(id, input) {
+  async update(id, userId, input) {
     const question = questions.find((q) => q.id === id)
     if (!question) throw new RepositoryError('NETWORK', '질문을 찾을 수 없습니다.')
-    assertEditable(question)
+    assertEditable(question, userId)
     const title = validateText(input.title, 100, '제목')
     const content = validateText(input.content, 5000, '내용')
     const updated: Question = { ...question, title, content, updatedAt: new Date().toISOString() }
     questions = questions.map((q) => (q.id === id ? updated : q))
     return updated
   },
-  async remove(id) {
+  async remove(id, userId) {
     const question = questions.find((q) => q.id === id)
     if (!question) return
-    assertEditable(question)
+    assertEditable(question, userId)
     questions = questions.filter((q) => q.id !== id)
   },
 }

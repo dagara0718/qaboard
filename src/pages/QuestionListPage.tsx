@@ -6,7 +6,7 @@ import { Button } from '../components/ui/Button'
 import { LoadingState } from '../components/states/LoadingState'
 import { EmptyState } from '../components/states/EmptyState'
 import { ErrorState } from '../components/states/ErrorState'
-import { mockQuestionRepository } from '../lib/dataAccess/mockRepository'
+import { questionRepository } from '../lib/dataAccess'
 import type { Question } from '../types/domain'
 import type { Role, Session } from '../lib/dataAccess/types'
 import './QuestionListPage.css'
@@ -16,11 +16,12 @@ type Filter = 'all' | 'pending' | 'answered'
 interface QuestionListPageProps {
   session: Session
   onRoleChange: (role: Role) => void
+  onLogout?: () => void
 }
 
 type LoadState = 'loading' | 'loaded' | 'empty' | 'error'
 
-export function QuestionListPage({ session, onRoleChange }: QuestionListPageProps) {
+export function QuestionListPage({ session, onRoleChange, onLogout }: QuestionListPageProps) {
   const navigate = useNavigate()
   const isAdmin = session.role === 'admin'
   const [questions, setQuestions] = useState<Question[]>([])
@@ -30,8 +31,8 @@ export function QuestionListPage({ session, onRoleChange }: QuestionListPageProp
   const load = () => {
     setLoadState('loading')
     const promise = isAdmin
-      ? mockQuestionRepository.listAll()
-      : mockQuestionRepository.listMine(session.userId ?? '')
+      ? questionRepository.listAll()
+      : questionRepository.listMine(session.userId ?? '')
     promise
       .then((result) => {
         setQuestions(result)
@@ -52,6 +53,8 @@ export function QuestionListPage({ session, onRoleChange }: QuestionListPageProp
       <HeaderInternal
         role={session.role === 'admin' ? 'admin' : 'member'}
         onRoleChange={onRoleChange}
+        onLogout={onLogout}
+        displayName={session.displayName}
       />
       <div className="list-container">
         <div className="page-header">

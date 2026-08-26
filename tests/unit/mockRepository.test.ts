@@ -25,17 +25,19 @@ describe('mockQuestionRepository', () => {
   })
 
   it('답변완료 질문은 수정할 수 없다 (FR-011)', async () => {
-    await expect(mockQuestionRepository.update('q1', { title: 'x', content: 'y' })).rejects.toThrow(
+    await expect(
+      mockQuestionRepository.update('q1', MEMBER_USER_ID, { title: 'x', content: 'y' }),
+    ).rejects.toThrow(RepositoryError)
+  })
+
+  it('답변완료 질문은 삭제할 수 없다 (FR-011)', async () => {
+    await expect(mockQuestionRepository.remove('q1', MEMBER_USER_ID)).rejects.toThrow(
       RepositoryError,
     )
   })
 
-  it('답변완료 질문은 삭제할 수 없다 (FR-011)', async () => {
-    await expect(mockQuestionRepository.remove('q1')).rejects.toThrow(RepositoryError)
-  })
-
   it('답변대기 질문은 수정 가능하다 (FR-009)', async () => {
-    const updated = await mockQuestionRepository.update('q2', {
+    const updated = await mockQuestionRepository.update('q2', MEMBER_USER_ID, {
       title: '수정된 제목',
       content: '수정된 내용',
     })
@@ -46,6 +48,18 @@ describe('mockQuestionRepository', () => {
     await expect(
       mockQuestionRepository.create(MEMBER_USER_ID, { title: '   ', content: '내용' }),
     ).rejects.toThrow(RepositoryError)
+  })
+
+  it('다른 회원의 질문은 수정할 수 없다 (FR-012)', async () => {
+    await expect(
+      mockQuestionRepository.update('q2', OTHER_USER_ID, { title: '해킹시도', content: '내용' }),
+    ).rejects.toThrow(RepositoryError)
+  })
+
+  it('다른 회원의 질문은 삭제할 수 없다 (FR-012)', async () => {
+    await expect(mockQuestionRepository.remove('q2', OTHER_USER_ID)).rejects.toThrow(
+      RepositoryError,
+    )
   })
 })
 

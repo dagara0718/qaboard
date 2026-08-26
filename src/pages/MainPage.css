@@ -267,7 +267,8 @@
 
 @media (max-width: 768px) {
   .hero {
-    margin-top: 6rem;
+    /* 8.5rem: 헤더가 2행으로 줄바꿈되는 경우(프로토타입 뷰 전환 셀렉터 포함)까지 겹치지 않도록 여유 확보 */
+    margin-top: 8.5rem;
     min-height: auto;
     padding: 1.5rem 1rem;
   }

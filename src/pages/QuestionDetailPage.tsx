@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { HeaderInternal } from '../components/layout/HeaderInternal'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -8,7 +8,7 @@ import { Textarea } from '../components/ui/Textarea'
 import { LoadingState } from '../components/states/LoadingState'
 import { ErrorState } from '../components/states/ErrorState'
 import { UnauthorizedToast } from '../components/states/UnauthorizedToast'
-import { mockAnswerRepository, mockQuestionRepository } from '../lib/dataAccess/mockRepository'
+import { answerRepository, questionRepository } from '../lib/dataAccess'
 import { RepositoryError } from '../lib/dataAccess/types'
 import type { Answer, Question } from '../types/domain'
 import type { Role, Session } from '../lib/dataAccess/types'
@@ -17,12 +17,13 @@ import './QuestionDetailPage.css'
 interface QuestionDetailPageProps {
   session: Session
   onRoleChange: (role: Role) => void
+  onLogout?: () => void
 }
 
 type Load = 'loading' | 'loaded' | 'error'
 type Mode = 'view' | 'editQuestion' | 'answerForm'
 
-export function QuestionDetailPage({ session, onRoleChange }: QuestionDetailPageProps) {
+export function QuestionDetailPage({ session, onRoleChange, onLogout }: QuestionDetailPageProps) {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const isNew = id === 'new'
@@ -43,7 +44,7 @@ export function QuestionDetailPage({ session, onRoleChange }: QuestionDetailPage
   const load = () => {
     if (isNew || !id) return
     setLoadState('loading')
-    Promise.all([mockQuestionRepository.getById(id), mockAnswerRepository.getByQuestionId(id)])
+    Promise.all([questionRepository.getById(id), answerRepository.getByQuestionId(id)])
       .then(([q, a]) => {
         setQuestion(q)
         setAnswer(a)
@@ -74,10 +75,13 @@ export function QuestionDetailPage({ session, onRoleChange }: QuestionDetailPage
     setSaving(true)
     try {
       if (isNew) {
-        await mockQuestionRepository.create(session.userId ?? '', { title, content })
+        await questionRepository.create(session.userId ?? '', { title, content })
         navigate('/questions')
       } else if (question) {
-        const updated = await mockQuestionRepository.update(question.id, { title, content })
+        const updated = await questionRepository.update(question.id, session.userId ?? '', {
+          title,
+          content,
+        })
         setQuestion(updated)
         setMode('view')
       }
@@ -92,7 +96,7 @@ export function QuestionDetailPage({ session, onRoleChange }: QuestionDetailPage
     if (!question) return
     if (!window.confirm('정말 삭제하시겠습니까?')) return
     try {
-      await mockQuestionRepository.remove(question.id)
+      await questionRepository.remove(question.id, session.userId ?? '')
       navigate('/questions')
     } catch (e) {
       if (e instanceof RepositoryError) setToast(e.message)
@@ -115,14 +119,14 @@ export function QuestionDetailPage({ session, onRoleChange }: QuestionDetailPage
     setSaving(true)
     try {
       if (answer) {
-        const updated = await mockAnswerRepository.update(
+        const updated = await answerRepository.update(
           answer.id,
           session.userId ?? '',
           answerText,
         )
         setAnswer(updated)
       } else {
-        const created = await mockAnswerRepository.create(
+        const created = await answerRepository.create(
           question.id,
           session.userId ?? '',
           session.displayName ?? '관리자',
@@ -142,9 +146,20 @@ export function QuestionDetailPage({ session, onRoleChange }: QuestionDetailPage
   const canEditQuestion =
     !isAdmin && question?.userId === session.userId && question?.status === 'pending'
 
+  // FR-013: 관리자는 질문을 작성할 수 없다 — "+질문 작성" 버튼이 숨겨지지만 URL 직접 접근은 별도 차단 필요
+  if (isAdmin && isNew) {
+    return <Navigate to="/questions" replace />
+  }
+
   return (
     <div>
-      <HeaderInternal role={isAdmin ? 'admin' : 'member'} onRoleChange={onRoleChange} showBack />
+      <HeaderInternal
+        role={isAdmin ? 'admin' : 'member'}
+        onRoleChange={onRoleChange}
+        onLogout={onLogout}
+        displayName={session.displayName}
+        showBack
+      />
       <div className="detail-container">
         {!isNew && loadState === 'loading' && <LoadingState rows={1} />}
         {!isNew && loadState === 'error' && <ErrorState onRetry={load} />}
