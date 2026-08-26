@@ -1,0 +1,87 @@
+.header-main {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 1rem 2rem;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: var(--white);
+}
+
+.header-main .logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.header-main .proto-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.header-main .proto-switch select {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  min-height: 36px;
+}
+
+.header-main .header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.header-main .btn-header {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: var(--white);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-height: var(--touch-min);
+  transition: all 0.2s ease;
+}
+
+.header-main .btn-header:hover {
+  background: rgba(14, 165, 233, 0.1);
+  border-color: var(--blue);
+}
+
+.header-main .btn-header.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.header-main .role-tag {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: rgba(139, 92, 246, 0.25);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .header-main {
+    padding: 0.75rem 1rem;
+  }
+  .header-main .proto-switch {
+    width: 100%;
+    order: 3;
+  }
+}

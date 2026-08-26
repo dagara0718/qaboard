@@ -1,0 +1,89 @@
+.header-internal {
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 1rem 2rem;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.header-internal .logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.header-internal .btn-back {
+  background: transparent;
+  border: 1px solid var(--gray-200);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-height: var(--touch-min);
+  transition: border-color 0.2s ease;
+}
+
+.header-internal .btn-back:hover {
+  border-color: var(--blue);
+}
+
+.header-internal .proto-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--gray-600);
+}
+
+.header-internal .proto-switch select {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  min-height: 36px;
+  background: var(--white);
+}
+
+.header-internal .header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.header-internal .role-tag {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  font-weight: 700;
+}
+
+.header-internal .btn-logout {
+  background: transparent;
+  border: 1px solid var(--gray-200);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-height: var(--touch-min);
+  transition: all 0.2s ease;
+}
+
+.header-internal .btn-logout:hover {
+  border-color: var(--blue);
+  background: var(--gray-100);
+}
+
+@media (max-width: 768px) {
+  .header-internal {
+    padding: 0.75rem 1rem;
+  }
+}

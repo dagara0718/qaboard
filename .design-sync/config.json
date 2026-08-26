@@ -1,0 +1,23 @@
+{
+  "shape": "package",
+  "projectId": "835947f9-9da0-4860-983a-592ec34f948b",
+  "pkg": "qanow",
+  "globalName": "Qanow",
+  "buildCmd": "npm run build",
+  "srcDir": "src",
+  "componentSrcMap": {
+    "Button": "components/ui/Button.tsx",
+    "Input": "components/ui/Input.tsx",
+    "Textarea": "components/ui/Textarea.tsx",
+    "Badge": "components/ui/Badge.tsx",
+    "LoadingState": "components/states/LoadingState.tsx",
+    "EmptyState": "components/states/EmptyState.tsx",
+    "ErrorState": "components/states/ErrorState.tsx",
+    "UnauthorizedToast": "components/states/UnauthorizedToast.tsx",
+    "HeaderMain": "components/layout/HeaderMain.tsx",
+    "HeaderInternal": "components/layout/HeaderInternal.tsx"
+  },
+  "cssEntry": "styles/global.css",
+  "tokensGlob": "styles/tokens.css",
+  "docsDir": "../../specs/001-qanow-qa"
+}
