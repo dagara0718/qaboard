@@ -129,7 +129,9 @@ export function QuestionDetailPage({ session, onRoleChange, onLogout }: Question
         const created = await answerRepository.create(
           question.id,
           session.userId ?? '',
-          session.displayName ?? '관리자',
+          // design.md는 관리자 개인 식별 정보를 노출하지 않고 항상 "관리자"로만 표시한다
+          // (실 인증 모드의 session.displayName은 이메일이라 그대로 쓰면 개인정보가 노출된다).
+          '관리자',
           answerText,
         )
         setAnswer(created)
