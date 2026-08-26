@@ -245,38 +245,46 @@
 
 **⛔ GATE: Phase 4 T041 완료 전에는 시작하지 않는다 (사용자 지정 순서).**
 
-- [ ] T042 Supabase 클라이언트 초기화, 환경변수 템플릿 — `src/lib/supabase/client.ts`, `.env.local.example`
+- [X] T042 Supabase 클라이언트 초기화, 환경변수 템플릿 — `src/lib/supabase/client.ts`, `.env.local.example`
   - 관련 요구사항: plan.md Technical Context
   - design.md: N/A
   - 검증: 클라이언트 인스턴스 생성 시 에러 없음(연결 자체는 실 프로젝트 필요)
-- [ ] T043 [P] `profiles` 테이블 마이그레이션 — `supabase/migrations/xxxx_profiles.sql`
+  - 결과: 실 프로젝트(qaboard, ref dtmjjfbhzscbtubsekcu) 연결 완료, `.env.local` + Vercel 대시보드에 `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` 등록, `npm run build` 통과
+- [X] T043 [P] `profiles` 테이블 마이그레이션 — `supabase/migrations/20260826100000_profiles.sql`
   - 관련 요구사항: FR-001, Key Entities
   - design.md: N/A (data-model.md 기준)
   - 검증: 마이그레이션 적용 후 스키마 조회로 컬럼/제약 확인
-- [ ] T044 [P] `questions` 테이블 마이그레이션 — `supabase/migrations/xxxx_questions.sql`
+  - 결과: Supabase SQL Editor에서 실행 완료(Success, no rows returned), Table Editor에서 `profiles` 테이블 존재 확인. auth.users 트리거로 자동 생성
+- [X] T044 [P] `questions` 테이블 마이그레이션 — `supabase/migrations/20260826100200_questions.sql`
   - 관련 요구사항: FR-005, FR-008
   - design.md: N/A
   - 검증: title/content 길이 CHECK 제약, status enum 제약 확인
-- [ ] T045 [P] `answers` 테이블 마이그레이션(question_id unique) — `supabase/migrations/xxxx_answers.sql`
+  - 결과: 실 프로젝트에 테이블 생성 확인(Table Editor). CHECK 제약(1-100/1-5000자, trim), status enum 포함
+- [X] T045 [P] `answers` 테이블 마이그레이션(question_id unique) — `supabase/migrations/20260826100300_answers.sql`
   - 관련 요구사항: FR-015, spec.md Assumptions(동시성 제어)
   - design.md: N/A
   - 검증: 동일 question_id 두 번째 insert 시 unique violation 확인
-- [ ] T046 RLS 정책: `questions` SELECT(본인만/관리자 전체) — `supabase/migrations/xxxx_rls_questions_select.sql`
+  - 결과: 테이블 생성 확인. `question_id unique` 제약 + 답변 insert 시 질문 상태를 `answered`로 전환하는 트리거(`mark_question_answered`) 포함. 실제 unique violation 테스트는 T053(수동 QA)에서 수행
+- [X] T046 RLS 정책: `questions` SELECT(본인만/관리자 전체) — `supabase/migrations/20260826100400_rls_questions_select.sql`
   - 관련 요구사항: FR-007, FR-013, FR-021, Constitution II
   - design.md: data-model.md 권한 매트릭스
   - 검증: 회원 A 세션으로 회원 B 질문 SELECT 시 결과 0건 확인
-- [ ] T047 RLS 정책: `questions` INSERT/UPDATE/DELETE(pending-lock, 본인만) — `supabase/migrations/xxxx_rls_questions_write.sql`
+  - 결과: 정책 적용 완료(SQL 실행 성공). 실 세션 기준 교차 검증은 T053에서 수행
+- [X] T047 RLS 정책: `questions` INSERT/UPDATE/DELETE(pending-lock, 본인만) — `supabase/migrations/20260826100500_rls_questions_write.sql`
   - 관련 요구사항: FR-009, FR-010, FR-011, FR-012
   - design.md: 동일
   - 검증: `answered` 상태 질문 UPDATE 시도 시 정책 위반 에러 확인
-- [ ] T048 RLS 정책: `answers` INSERT(관리자만, pending 질문만)/UPDATE(작성 본인만) — `supabase/migrations/xxxx_rls_answers.sql`
+  - 결과: 정책 적용 완료. 실제 위반 시도 검증은 T053에서 수행
+- [X] T048 RLS 정책: `answers` INSERT(관리자만, pending 질문만)/UPDATE(작성 본인만) — `supabase/migrations/20260826100600_rls_answers.sql`
   - 관련 요구사항: FR-015, FR-017, FR-018
   - design.md: 동일
   - 검증: 관리자 B가 관리자 A의 답변 UPDATE 시도 시 차단 확인
-- [ ] T049 관리자 역할 판별 함수/정책(`profiles.role='admin'` 기준) — `supabase/migrations/xxxx_admin_role.sql`
+  - 결과: 정책 적용 완료. 실제 차단 검증은 T053에서 수행
+- [X] T049 관리자 역할 판별 함수/정책(`profiles.role='admin'` 기준) — `supabase/migrations/20260826100100_admin_role.sql`
   - 관련 요구사항: Key Entities, FR-013
   - design.md: N/A
   - 검증: role='member' 세션으로 관리자 전용 정책 접근 시 차단 확인
+  - 결과: `is_admin()` security definer 함수로 profiles 자기참조 재귀 회피, questions/answers RLS 전체가 이 함수 사용. 실 세션 검증은 T053에서 수행
 - [ ] T050 SupabaseRepository 구현(QuestionRepository/AnswerRepository) — `src/lib/dataAccess/supabaseRepository.ts`
   - 관련 요구사항: contracts/data-access.md
   - design.md: N/A
