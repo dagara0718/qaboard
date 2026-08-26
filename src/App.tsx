@@ -42,7 +42,7 @@ export function App() {
         element={<MainPage role={session.role} onRoleChange={onRoleChange} onLogout={onLogout} />}
       />
       <Route path="/signup" element={<SignupPage />} />
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage onAuthChange={setAuthSession} />} />
       <Route
         path="/questions"
         element={protectedRoute(
