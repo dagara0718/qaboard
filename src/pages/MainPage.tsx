@@ -29,6 +29,7 @@ export function MainPage({ role, onRoleChange, onLogout }: MainPageProps) {
     <div className="main-page">
       <HeaderMain role={role} onRoleChange={onRoleChange} onLogout={onLogout} />
 
+      <main>
       <section className="hero">
         <div className="hero-content">
           <div className="hero-text">
@@ -94,6 +95,7 @@ export function MainPage({ role, onRoleChange, onLogout }: MainPageProps) {
           </div>
         </div>
       </section>
+      </main>
 
       <footer className="main-footer">
         <p className="footer-text">이미 계정이 있으신가요?</p>

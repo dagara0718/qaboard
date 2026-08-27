@@ -2,6 +2,9 @@
   --navy: #0f172a;
   --blue: #0ea5e9;
   --blue-dark: #0284c7;
+  /* WCAG AA 4.5:1 텍스트 대비용 — 장식(그라디언트/보더)에는 --blue를, 텍스트/버튼 배경에는 이 토큰을 쓴다 */
+  --blue-text: #0369a1;
+  --blue-text-hover: #075985;
   --violet: #8b5cf6;
   --pink: #ec4899;
   --white: #ffffff;

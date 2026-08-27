@@ -56,7 +56,7 @@ export function QuestionListPage({ session, onRoleChange, onLogout }: QuestionLi
         onLogout={onLogout}
         displayName={session.displayName}
       />
-      <div className="list-container">
+      <main className="list-container">
         <div className="page-header">
           <h1 className="text-page-title">{isAdmin ? '문의 관리' : '내 질문'}</h1>
           {!isAdmin && (
@@ -113,7 +113,7 @@ export function QuestionListPage({ session, onRoleChange, onLogout }: QuestionLi
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
   )
 }

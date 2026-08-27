@@ -391,16 +391,17 @@
   - design.md: N/A
   - 검증: `npm run test -- --coverage` 리포트 확인
   - 결과: 22개 테스트 전부 통과. 커버리지는 데이터/권한 로직(mockRepository/supabaseRepository 검증 경로, types) 중심으로 높으나 신규 페이지(MainPage/LoginPage/SignupPage/HeaderMain)의 렌더 테스트는 미작성 — 전체 80% 미달. 남은 갭으로 기록
+  - 후속 갱신(T078): 35개 테스트로 확대, 전체 라인 커버리지 77.58%로 상승 — T078 참조
 - [ ] T067 Lighthouse 성능 감사(메인 페이지) — 없음(도구 실행)
   - 관련 요구사항: SC-008, Constitution VI
   - design.md: §10 (Aurora/Floating Card 성능)
   - 검증: Lighthouse 성능 점수 80 이상, 3G 시뮬레이션 FCP 3초 이내
-  - 미완료 사유: 이 세션에 Lighthouse CI 도구 미가용. 브라우저 배포 확인 시 시각적 성능만 육안 확인
-- [ ] T068 접근성 감사(대비/키보드/색상 단독 전달 여부) — axe 또는 동급 도구
+  - 미완료 사유: `lighthouse` npm 패키지를 설치해 재시도했으나, 이 세션 환경(Windows git-bash)에서 `chrome-launcher`가 헤드리스 Chrome의 DevTools 포트에 연결하지 못하는 환경 특이적 오류(`Failed to fetch browser webSocket URL`)가 지속됨 — Chrome 자체는 직접 실행 시 정상 동작(curl로 DevTools 포트 응답 확인)해 Chrome/네트워크 문제가 아니라 이 셸 환경에서의 chrome-launcher 프로세스 관리 이슈로 판단. 참고로 프로덕션 번들이 gzip 기준 JS 118.94KB, CSS 3.69KB, 이미지 없음(CSS 그라디언트만 사용)이라 정성적으로는 3초 FCP 기준을 여유있게 충족할 것으로 예상되나, 정식 Lighthouse 리포트로 확정되지 않음
+- [X] T068 접근성 감사(대비/키보드/색상 단독 전달 여부) — axe 또는 동급 도구
   - 관련 요구사항: SC-009, Constitution VIII, Constitution IX
   - design.md: §21
   - 검증: axe 리포트 critical/serious 이슈 0건
-  - 미완료 사유: axe 도구 미설치. 색상 이중화(배지 기호+텍스트)와 포커스 스타일은 코드 리뷰로 확인됨(T074 등)이나 정식 axe 리포트는 아님
+  - 결과: `@axe-core/cli` 설치 후 로컬 프로덕션 빌드(`vite preview`)의 5개 라우트(`/`, `/login`, `/signup`, `/questions`, `/questions/new`)에 대해 axe-core 4.13 실행. 최초 실행에서 `landmark-one-main`(모든 페이지), `region`(모든 페이지), `color-contrast`(로그인/회원가입의 버튼·링크) 위반 발견 → T078에서 수정 → 재실행 결과 5개 라우트 전부 0 violations
 - [X] T069 최종 `/design-sync` 회귀 확인(Supabase 연동 후 시각 변화 없는지) — 전체
   - 관련 요구사항: Constitution V
   - design.md: 전체
@@ -490,3 +491,26 @@ Phase 1 (설정)
   - 결과: `symbol: '■'`로 수정
 - [X] T075 모바일 네비게이션에 햄버거 메뉴(내 질문/질문 작성/계정 등 토글)를 `HeaderMain.tsx`/`HeaderInternal.tsx`에 구현 — 현재 버튼 줄바꿈 방식만 존재하며 관련 Task가 전혀 없었음 per FR-032 (missing)
   - 결과: HeaderMain에 실 인증 모드 전용 햄버거 토글+모바일 메뉴 구현(내 질문 보기/질문 작성/로그아웃). 프로토타입 모드는 design.md 원안(줄바꿈) 유지해 하위호환 보존
+
+---
+
+## Phase 10: 배포 상태 점검 후속 조치
+
+**Purpose**: Vercel/Supabase 라이브 배포 상태 점검(lint/test/build 재검증, curl 기반 배포·REST 실측, axe 접근성 감사) 과정에서 발견한 문제를 수정.
+
+- [X] T076 `App.tsx`에 정의되지 않은 경로 접근 시 200 응답이지만 빈 화면(`<div id="root">` 미채움)으로 보이는 문제 — 와일드카드 라우트 부재가 원인 per SC-009(사용자가 오류 없이 명확한 상태를 인지) (found via live curl 점검)
+  - 결과: `<Route path="*" element={<Navigate to="/" replace />} />` 추가
+- [X] T077 axe-core 4.13 감사에서 발견된 접근성 위반 3종 수정 per Constitution VIII/IX, SC-009
+  - `landmark-one-main`/`region`(전체 5개 라우트): 각 페이지의 콘텐츠 영역을 `<main>`으로 감싸지 않아 발생 — `MainPage`/`LoginPage`/`SignupPage`/`QuestionListPage`/`QuestionDetailPage`에 `<main>` 랜드마크 추가
+  - `color-contrast`(로그인/회원가입 버튼·링크): `--blue`(#0ea5e9, 흰 배경 대비 약 2.6:1)를 텍스트/버튼 배경으로 사용해 WCAG AA 4.5:1 미달 — `tokens.css`에 `--blue-text`(#0369a1, 약 5.98:1)/`--blue-text-hover`(#075985) 토큰을 신설해 `Button.css`의 `.btn-primary`와 `AuthPage.css`의 `.auth-switch a`에 적용(장식용 그라디언트/보더의 기존 `--blue`는 그대로 유지)
+  - 검증: `vite preview` 로컬 프로덕션 빌드로 5개 라우트 재실행 → 0 violations
+- [X] T078 신규 페이지(MainPage/LoginPage/SignupPage/HeaderMain) 렌더 테스트 추가 — `tests/unit/MainPage.test.tsx`, `tests/unit/LoginPage.test.tsx`, `tests/unit/SignupPage.test.tsx`, `tests/unit/HeaderMain.test.tsx` per T066 커버리지 갭
+  - 결과: 13개 테스트 추가(전체 22→35개, 전부 통과). `vite.config.ts` coverage.exclude에 `dist/**`, `eslint.config.js`, `vite.config.ts` 등을 추가해 빌드 산출물이 커버리지 분모에 잘못 포함되던 문제도 같이 수정. 전체 라인 커버리지 77.58%(목표 80% 근접, 잔여 갭은 `App.tsx`/`sessionProvider.ts`/`mockSession.ts`/`supabaseRepository.ts`의 실제 Supabase 연동 배선 코드로, 라이브 연동 코드라 단위 테스트 대신 이번 세션에 REST API 직접 호출로 수동 검증함)
+- [ ] T079 Supabase CLI 로컬 설치 및 프로젝트 링크 — 없음(도구 설치)
+  - 관련 요구사항: 없음(개발 편의)
+  - 검증: `supabase link --project-ref dtmjjfbhzscbtubsekcu` 성공
+  - 결과: `npm install -g supabase`로 CLI 설치는 완료. 링크(`supabase link`)는 로그인 토큰 입력이 필요해 사용자 확인 없이 진행하지 않음 — 필요 시 후속 진행
+- [ ] T080 Vercel CLI 로그인 — 없음(도구 로그인)
+  - 관련 요구사항: 없음(개발 편의)
+  - 검증: `vercel whoami` 성공
+  - 미완료 사유: 한글 Windows 계정명으로 인한 Node fetch ByteString 오류(`vercel login` 시 재현) — 홈 디렉터리 환경변수 우회 시도도 실패. GitHub 연동 자동배포가 CLI 없이 정상 작동 중이라 사용자와 상의 후 계정명 변경 등 침습적 조치는 보류하기로 결정(스킵)

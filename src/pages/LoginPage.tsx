@@ -41,7 +41,7 @@ export function LoginPage({ onAuthChange }: LoginPageProps) {
   }
 
   return (
-    <div className="auth-page">
+    <main className="auth-page">
       <div className="auth-card">
         <h1 className="text-page-title">로그인</h1>
         <Input
@@ -68,6 +68,6 @@ export function LoginPage({ onAuthChange }: LoginPageProps) {
           계정이 없으신가요? <Link to="/signup">회원가입</Link>
         </p>
       </div>
-    </div>
+    </main>
   )
 }

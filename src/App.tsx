@@ -55,6 +55,7 @@ export function App() {
           <QuestionDetailPage session={session} onRoleChange={onRoleChange} onLogout={onLogout} />,
         )}
       />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

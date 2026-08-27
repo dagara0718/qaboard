@@ -42,6 +42,6 @@
 }
 
 .auth-switch a {
-  color: var(--blue);
+  color: var(--blue-text);
   font-weight: 600;
 }

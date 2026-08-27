@@ -162,7 +162,7 @@ export function QuestionDetailPage({ session, onRoleChange, onLogout }: Question
         displayName={session.displayName}
         showBack
       />
-      <div className="detail-container">
+      <main className="detail-container">
         {!isNew && loadState === 'loading' && <LoadingState rows={1} />}
         {!isNew && loadState === 'error' && <ErrorState onRetry={load} />}
 
@@ -283,7 +283,7 @@ export function QuestionDetailPage({ session, onRoleChange, onLogout }: Question
             )}
           </>
         )}
-      </div>
+      </main>
       {toast && <UnauthorizedToast message={toast} onDismiss={() => setToast(null)} />}
     </div>
   )

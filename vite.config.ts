@@ -12,7 +12,17 @@ export default defineConfig({
     // 테스트는 항상 MockRepository로 고정한다.
     env: { VITE_SUPABASE_URL: '', VITE_SUPABASE_ANON_KEY: '' },
     coverage: {
-      exclude: ['ds-bundle/**', '.ds-sync/**', '.design-sync/**', 'node_modules/**'],
+      exclude: [
+        'ds-bundle/**',
+        '.ds-sync/**',
+        '.design-sync/**',
+        'node_modules/**',
+        'dist/**',
+        'eslint.config.js',
+        'vite.config.ts',
+        'src/vite-env.d.ts',
+        'src/main.tsx',
+      ],
     },
   },
 })

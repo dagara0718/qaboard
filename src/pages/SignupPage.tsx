@@ -31,7 +31,7 @@ export function SignupPage() {
   }
 
   return (
-    <div className="auth-page">
+    <main className="auth-page">
       <div className="auth-card">
         <h1 className="text-page-title">회원가입</h1>
         {done ? (
@@ -76,6 +76,6 @@ export function SignupPage() {
           </>
         )}
       </div>
-    </div>
+    </main>
   )
 }
